@@ -1,14 +1,19 @@
 import * as core from "@actions/core";
 import { Octokit } from "@octokit/rest";
 
+type ChangedFilesBatchResponse = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  repository: any;
+};
+
 export async function fetchFilesBatchPR(
   client: Octokit,
   prNumber: number,
   owner: string,
   repo: string,
-  startCursor?: string
+  startCursor?: string,
 ): Promise<PrResponse> {
-  const { repository } = await client.graphql(
+  const { repository } = await client.graphql<ChangedFilesBatchResponse>(
     `
     query ChangedFilesBatch($owner: String!, $repo: String!, $prNumber: Int!, $startCursor: String) {
       repository(owner: $owner, name: $repo) {
@@ -30,7 +35,7 @@ export async function fetchFilesBatchPR(
       }
     }
   `,
-    { owner, repo, prNumber, startCursor }
+    { owner, repo, prNumber, startCursor },
   );
 
   const pr = repository.pullRequest;
@@ -62,7 +67,7 @@ export async function fetchFilesBatchCommit(
   client: Octokit,
   sha: string,
   owner: string,
-  repo: string
+  repo: string,
 ): Promise<string[]> {
   try {
     core.debug(`Getting commit data for ${owner}/${repo}#${sha}`);
@@ -72,13 +77,13 @@ export async function fetchFilesBatchCommit(
       ref: sha,
     });
 
-    const filesChanged = resp.data.files.map((f) => f.filename);
+    const filesChanged = resp.data.files?.map((f) => f.filename) ?? [];
 
     core.info(`Files changed: ${filesChanged}`);
 
     return filesChanged;
   } catch (err) {
-    core.error(err);
+    core.error(err as string | Error);
     core.setFailed("Error occurred getting files from commit.");
     return [];
   }

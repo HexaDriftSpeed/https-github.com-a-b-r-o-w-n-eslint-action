@@ -38,10 +38,10 @@ async function getFilesFromPR(client: Octokit, prNumber: number): Promise<string
       const result = await fetchFilesBatchPR(client, prNumber, getOwner(), getRepo(), startCursor);
 
       files = files.concat(result.files);
-      hasNextPage = result.hasNextPage;
+      hasNextPage = result.hasNextPage ?? false;
       startCursor = result.endCursor;
     } catch (err) {
-      core.error(err);
+      core.error(err as string | Error);
       core.setFailed("Error occurred getting changed files.");
       hasNextPage = false;
     }
@@ -54,7 +54,7 @@ export async function getChangedFiles(
   client: Octokit,
   filesGlob: string[],
   prNumber: number | undefined,
-  sha: string
+  sha: string,
 ): Promise<string[]> {
   let files: string[] = [];
 
