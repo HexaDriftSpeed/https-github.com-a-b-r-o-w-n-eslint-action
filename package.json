@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf lib && ncc build src/eslint-action.ts -o lib",
     "lint": "eslint --ext .ts src",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",
