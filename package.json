@@ -4,6 +4,7 @@
   "description": "eslint-action",
   "main": "lib/eslint-action.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "rm -rf lib && ncc build src/eslint-action.ts -o lib",
     "lint": "eslint --ext .ts src",
     "test": "jest",

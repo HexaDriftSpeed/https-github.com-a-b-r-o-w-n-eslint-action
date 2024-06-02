@@ -15,20 +15,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get pnpm store directory
+        id: pnpm-store-path
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
       - name: Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            ${{ steps.pnpm-store-path.outputs.STORE_PATH }}
+            **/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-pnpm-
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install
       - name: Lint
         uses: ./
         with:
@@ -39,6 +47,6 @@ jobs:
       - name: Build
         run: npm run build
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
