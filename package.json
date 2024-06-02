@@ -5,7 +5,6 @@
   "main": "lib/eslint-action.js",
   "packageManager": "^pnpm@9.1.4",
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "build": "rm -rf lib && ncc build src/eslint-action.ts -o lib",
     "lint": "eslint --ext .ts src",
     "test": "jest",
