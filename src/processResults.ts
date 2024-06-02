@@ -14,7 +14,7 @@ type Annotation = {
   file: string;
   message: string;
   severity: "warning" | "failure";
-  col?: number;
+  startColumn?: number;
   endColumn?: number;
   startLine?: number;
   endLine?: number;
@@ -65,7 +65,7 @@ export function processResults(results: ESLint.LintResult[]): LintResult {
         file: relFilePath,
         startLine: line,
         endLine,
-        col: column,
+        startColumn: column,
         endColumn: endColumn,
         severity: severity === 2 ? "failure" : "warning",
         message: `[${ruleId}] ${message}`,
