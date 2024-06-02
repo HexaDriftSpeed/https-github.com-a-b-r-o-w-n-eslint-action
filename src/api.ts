@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { Octokit } from "@octokit/rest";
+import type { Octokit } from "@octokit/rest";
 
 type ChangedFilesBatchResponse = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

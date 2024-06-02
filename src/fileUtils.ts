@@ -4,7 +4,7 @@ import path from "path";
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import micromatch from "micromatch";
-import { Octokit } from "@octokit/rest";
+import type { Octokit } from "@octokit/rest";
 
 import { fetchFilesBatchPR, fetchFilesBatchCommit } from "./api";
 

@@ -1,6 +1,7 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 import { Octokit } from "@octokit/rest";
+import fetch from "node-fetch";
 
 import { getChangedFiles } from "./fileUtils";
 import { getPrNumber, getSha } from "./githubUtils";
@@ -17,6 +18,7 @@ async function run(): Promise<void> {
   try {
     const octokit = new Octokit({
       auth: inputs.token,
+      request: { fetch },
       log: {
         debug: core.debug,
         info: core.info,
