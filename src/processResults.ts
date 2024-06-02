@@ -10,30 +10,13 @@ type LintResult = {
   warningCount: number;
 };
 
-type Annotation = {
+type AnnotationDetails = {
   file: string;
-  message: string;
-  severity: "warning" | "failure";
   startColumn?: number;
   endColumn?: number;
   startLine?: number;
   endLine?: number;
 };
-
-function logFileAnnotations(filePath: string, annotations: Annotation[]) {
-  core.startGroup(filePath);
-  annotations.forEach((a) => {
-    const { message, severity, ...annotationDetails } = a;
-
-    core.debug(JSON.stringify(a));
-    if (severity === "warning") {
-      core.warning(message, annotationDetails);
-    } else {
-      core.warning(message, annotationDetails);
-    }
-  });
-  core.endGroup();
-}
 
 export function processResults(results: ESLint.LintResult[]): LintResult {
   let errorCount = 0;
@@ -42,7 +25,8 @@ export function processResults(results: ESLint.LintResult[]): LintResult {
   for (const result of results) {
     const { filePath, messages } = result;
     const relFilePath = filePath.replace(`${GITHUB_WORKSPACE}/`, "");
-    const fileAnnotations: Annotation[] = [];
+
+    core.startGroup(relFilePath);
 
     for (const lintMessage of messages) {
       const { line, endLine, severity, ruleId, message, column, endColumn } = lintMessage;
@@ -63,19 +47,24 @@ export function processResults(results: ESLint.LintResult[]): LintResult {
 
       const isMultiLine = endLine && endLine !== line;
 
-      fileAnnotations.push({
+      const annotationDetails: AnnotationDetails = {
         file: relFilePath,
         startLine: line,
         endLine,
         // only add column info if error is on a single line
         startColumn: isMultiLine ? undefined : column,
         endColumn: isMultiLine ? undefined : endColumn,
-        severity: severity === 2 ? "failure" : "warning",
-        message: `[${ruleId}] ${message}`,
-      });
+      };
+
+      core.debug(JSON.stringify({ message: `[${ruleId}] ${message}`, ...annotationDetails }));
+      if (severity === 1) {
+        core.warning(`[${ruleId}] ${message}`, annotationDetails);
+      } else {
+        core.error(`[${ruleId}] ${message}`, annotationDetails);
+      }
     }
 
-    logFileAnnotations(relFilePath, fileAnnotations);
+    core.endGroup();
   }
 
   return {
