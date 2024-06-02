@@ -13,6 +13,7 @@ function logFileAnnotations(filePath: string, annotations: any[]) {
   annotations.forEach((a) => {
     const { message, annotationLevel, startLine, endLine, column, endColumn } = a;
 
+    core.debug(a);
     if (annotationLevel === "warning") {
       core.warning(message, { file: filePath, startColumn: column, endColumn, startLine: startLine, endLine });
       // core.warning(`${message} (Line ${start_line})`);
