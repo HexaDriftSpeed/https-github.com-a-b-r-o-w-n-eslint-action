@@ -1,41 +1,48 @@
 import * as core from "@actions/core";
-import { RestEndpointMethodTypes } from "@octokit/rest";
 import { ESLint } from "eslint";
 
 import inputs from "./inputs";
 
 const { GITHUB_WORKSPACE } = process.env;
 
-export const CHECK_NAME = "ESLint";
+type LintResult = {
+  errorCount: number;
+  warningCount: number;
+};
 
-function logFileAnnotations(filePath: string, annotations: any[]) {
+type Annotation = {
+  file: string;
+  message: string;
+  severity: "warning" | "failure";
+  col?: number;
+  endColumn?: number;
+  startLine?: number;
+  endLine?: number;
+};
+
+function logFileAnnotations(filePath: string, annotations: Annotation[]) {
   core.startGroup(filePath);
   annotations.forEach((a) => {
-    const { message, annotationLevel, startLine, endLine, column, endColumn } = a;
+    const { message, severity, ...annotationDetails } = a;
 
-    core.debug(a);
-    if (annotationLevel === "warning") {
-      core.warning(message, { file: filePath, startColumn: column, endColumn, startLine: startLine, endLine });
-      // core.warning(`${message} (Line ${start_line})`);
+    core.debug(JSON.stringify(a));
+    if (severity === "warning") {
+      core.warning(message, annotationDetails);
     } else {
-      core.warning(message, { file: filePath, startColumn: column, endColumn, startLine: startLine, endLine });
-      // core.error(`${message} (Line ${start_line})`);
+      core.warning(message, annotationDetails);
     }
   });
   core.endGroup();
 }
 
-export function processResults(
-  results: ESLint.LintResult[],
-): Partial<RestEndpointMethodTypes["checks"]["update"]["parameters"]> {
-  const annotations: any[] = [];
-
+export function processResults(results: ESLint.LintResult[]): LintResult {
   let errorCount = 0;
+  let warningCount = 0;
 
   for (const result of results) {
     const { filePath, messages } = result;
     const relFilePath = filePath.replace(`${GITHUB_WORKSPACE}/`, "");
-    const fileAnnotations: any[] = [];
+    const fileAnnotations: Annotation[] = [];
 
     for (const lintMessage of messages) {
       const { line, endLine, severity, ruleId, message, column, endColumn } = lintMessage;
@@ -50,32 +57,26 @@ export function processResults(
       } else if (inputs.quiet) {
         // skip message if quiet is true
         continue;
+      } else if (severity === 1) {
+        warningCount++;
       }
 
       fileAnnotations.push({
-        path: relFilePath,
+        file: relFilePath,
         startLine: line,
         endLine,
         col: column,
         endColumn: endColumn,
-        annotationLevel: severity === 2 ? "failure" : "warning",
+        severity: severity === 2 ? "failure" : "warning",
         message: `[${ruleId}] ${message}`,
       });
     }
 
-    // annotations.push(...fileAnnotations);
-    // if (core.isDebug()) {
-    //   logFileAnnotations(relFilePath, fileAnnotations);
-    // }
     logFileAnnotations(relFilePath, fileAnnotations);
   }
 
   return {
-    conclusion: errorCount > 0 ? "failure" : "success",
-    output: {
-      title: CHECK_NAME,
-      summary: `${errorCount} error(s) found`,
-      annotations,
-    },
+    errorCount,
+    warningCount,
   };
 }
