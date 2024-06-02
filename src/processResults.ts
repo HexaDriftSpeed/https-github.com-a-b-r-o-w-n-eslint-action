@@ -61,12 +61,15 @@ export function processResults(results: ESLint.LintResult[]): LintResult {
         warningCount++;
       }
 
+      const isMultiLine = endLine && endLine !== line;
+
       fileAnnotations.push({
         file: relFilePath,
         startLine: line,
         endLine,
-        startColumn: column,
-        endColumn: endColumn,
+        // only add column info if error is on a single line
+        startColumn: isMultiLine ? undefined : column,
+        endColumn: isMultiLine ? undefined : endColumn,
         severity: severity === 2 ? "failure" : "warning",
         message: `[${ruleId}] ${message}`,
       });
