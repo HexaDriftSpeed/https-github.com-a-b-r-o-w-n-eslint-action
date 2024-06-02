@@ -26,6 +26,7 @@
     "@octokit/rest": "^20.1.1",
     "eslint": "^8.56.0",
     "micromatch": "^4.0.7",
+    "node-fetch": "^3.3.2",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
