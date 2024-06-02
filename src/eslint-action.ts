@@ -82,7 +82,11 @@ async function run(): Promise<void> {
       core.info("No files to lint.");
     }
   } catch (err) {
-    core.setFailed(err.message ? err.message : "Error linting files.");
+    if (err instanceof Error && err.message) {
+      core.setFailed(err.message);
+    } else {
+      core.setFailed("Error linting files.");
+    }
   }
 }
 
