@@ -5,7 +5,7 @@ import { ESLint } from "eslint";
 
 import inputs from "./inputs";
 
-export async function lint(files: string[]): Promise<ESLint.LintResult[]> {
+export async function lint(): Promise<ESLint.LintResult[]> {
   let cwd = inputs.cwd;
 
   /* istanbul ignore else */
@@ -25,7 +25,7 @@ export async function lint(files: string[]): Promise<ESLint.LintResult[]> {
     },
   });
 
-  const result = await linter.lintFiles(files);
+  const result = await linter.lintFiles(inputs.files);
 
   return result;
 }
