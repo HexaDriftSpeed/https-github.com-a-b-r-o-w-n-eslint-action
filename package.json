@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpx pretty-quick --staged"
+    "pre-commit": "pnpx pretty-quick --staged && pnpm run build"
   },
   "repository": {
     "type": "git",
