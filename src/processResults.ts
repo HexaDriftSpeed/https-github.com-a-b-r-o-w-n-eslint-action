@@ -22,6 +22,9 @@ type AnnotationDetails = {
  * Skips reporting on file if there are no errors or warnings (if quiet not enabled)
  */
 const shouldReport = (result: ESLint.LintResult): boolean => {
+  core.debug(
+    `Checking shouldReport - file: ${result.filePath}, errorCount: ${result.errorCount}, warningCoung: ${result.warningCount}`,
+  );
   if (result.errorCount > 0) {
     return true;
   }
