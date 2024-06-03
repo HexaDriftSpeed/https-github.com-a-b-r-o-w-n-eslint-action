@@ -2,10 +2,11 @@ import path from "path";
 
 import * as core from "@actions/core";
 import { ESLint } from "eslint";
+import * as _espree from "espree";
 
 import inputs from "./inputs";
 
-export async function lint(files: string[]): Promise<ESLint.LintResult[]> {
+export async function lint(): Promise<ESLint.LintResult[]> {
   let cwd = inputs.cwd;
 
   /* istanbul ignore else */
@@ -25,7 +26,9 @@ export async function lint(files: string[]): Promise<ESLint.LintResult[]> {
     },
   });
 
-  const result = await linter.lintFiles(files);
+  const result = await linter.lintFiles(inputs.files);
 
   return result;
 }
+
+export const espree = _espree;

@@ -5,7 +5,7 @@ import * as github from "@actions/github";
 
 // import { getChangedFiles } from "./fileUtils";
 import { getPrNumber, getSha } from "./githubUtils";
-import inputs from "./inputs";
+// import inputs from "./inputs";
 import { lint } from "./lint";
 import { processResults } from "./processResults";
 
@@ -31,7 +31,7 @@ async function run(): Promise<void> {
     // const files = await getChangedFiles(octokit, inputs.files, prNumber, getSha());
     // core.debug(`${files.length} files match ${inputs.files}.`);
 
-    const report = await lint(inputs.files);
+    const report = await lint();
     const result = processResults(report);
 
     if (result.errorCount > 0) {

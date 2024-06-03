@@ -8,6 +8,7 @@ async function build() {
     // target
     platform: "node",
     target: "node20.14",
+    format: "esm",
     // output
     outdir: "lib",
 
@@ -15,7 +16,7 @@ async function build() {
 
     // optimization
     bundle: true,
-    minify: true,
+    minify: false,
     treeShaking: true,
   });
 }
