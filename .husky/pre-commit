@@ -1,1 +1,1 @@
-npm exec pretty-quick --staged
+npm exec pretty-quick --staged --branch main
