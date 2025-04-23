@@ -1,5 +1,4 @@
-
-The MIT License (MIT)
+MIT License (MIT)
 
 Copyright (c) 2019 Andy Brown
 
