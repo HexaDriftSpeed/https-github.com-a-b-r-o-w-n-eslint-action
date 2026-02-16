@@ -6,7 +6,6 @@
 Runs eslint
 ## Usage
 
-In `.github/workflows/main.yml`:
 
 ```yml
 name: Example Workflow
