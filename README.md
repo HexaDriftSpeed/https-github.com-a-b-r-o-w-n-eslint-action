@@ -7,8 +7,6 @@
 
 on: [pull_request, push]
 
-jobs:
-  lint:
     steps:
       - uses: actions/checkout@v1
       - uses: a-b-r-o-w-n/eslint-action@v2
