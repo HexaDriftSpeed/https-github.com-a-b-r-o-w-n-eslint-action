@@ -14,7 +14,4 @@ on: [pull_request, push]
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           files: "src/**/*"
           ignore: "src/some-file-to-ignore.js"
-          extensions: ".js,.ts"
-          working-directory: "./my-package"
-          quiet: "false"
-```
+          extensions: ".
